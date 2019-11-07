@@ -15,7 +15,7 @@ args = parser.parse_args()
 
 if args.cut:
     source = os.path.expanduser(os.path.abspath(args.cut[0]))
-    destination = args.cut[1]
+    destination = os.path.expanduser(os.path.abspath(args.cut[1]))
     duration = args.cut[2]
     
     if not "." in duration:
@@ -29,12 +29,21 @@ if args.cut:
 
     if not os.path.isdir(destination):
         os.mkdir(destination)
+    elif len(os.listdir(destination)) > 0:
+        print("Directory \"" + destination + "\" is not empty.")
+        choice = input("Delete files inside directory? (Y/n): ")
+        if choice == "Y":
+            for f in os.listdir(destination):
+                print("Deleting: " + destination + "/" + f)
+                os.remove(destination + "/" + f)
+        else:
+            print("Received \"" + choice + "\". Exiting...")
+            sys.exit()
 
-    cmd = "sox -V3 \"" + source + "\" \"" + destination + ".mp3\" silence -l 0 1 " + duration + " 0.1% : newfile : restart"
+    cmd = "sox -V3 \"" + source + "\" \"" + destination + "/.mp3\" silence -l 0 1 " + duration + " 0.1% : newfile : restart"
     print(cmd)
-    #subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True)
 
-    count = subprocess.check_output("ls -1 \"" + destination + "\" | wc -l", shell=True, encoding='UTF-8')
-    print("Files generated: " + str(count))
+    print("Files generated: " + str(len(os.listdir(destination))))
 
 
