@@ -5,12 +5,29 @@ import argparse
 import os
 import sys
 
+USB_PATH = "/run/media/arebel/DASHCAM/"
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-c',
                     '--cut',
                     nargs=3,
                     help='Cuts the file specified in SOURCE with DURATION in seconds (e.g. 10.0) and save to DESTINATION folder.',
                     metavar=('SOURCE','DESTINATION','DURATION'))
+parser.add_argument('-t',
+                    '--transfer',
+                    nargs=1,
+                    help='Transfers the files from SOURCE folder.',
+                    metavar=('SOURCE'))
+parser.add_argument('-s',
+                    '--start',
+                    type=int,
+                    default=1,
+                    help='Specifies the start index.')
+parser.add_argument('-e',
+                    '--end',
+                    type=int,
+                    default=-1,
+                    help='Specifies the end index.')
 
 args = parser.parse_args()
 
@@ -46,5 +63,30 @@ if args.cut:
     subprocess.call(cmd, shell=True)
 
     print("Files generated: " + str(len(os.listdir(destination))))
+elif args.transfer:
+    choice = input("This will delete all files in the USB. Continue? (Y/n): ")
+    if choice != "Y":
+        print("Transfer cancelled.")
+        sys.exit();
 
+    # print('Removing files in ' + USB_PATH)
+    # for f in os.listdir(USB_PATH):
+    #     os.remove(USB_PATH + f)
+
+    source_path = os.path.expanduser(os.path.abspath(args.transfer[0]))
+    
+    start_index = args.start
+    end_index = args.end
+
+    if end_index <= -1:
+        end_index = len(os.listdir(source_path))
+
+    if start_index > end_index:
+        raise ValueError("Start index should not be bigger than end index!")
+        sys.exit()
+
+    print(str(start_index) + " - " + str(end_index))
+        
+    
+    
 
