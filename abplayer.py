@@ -4,6 +4,7 @@ import subprocess
 import argparse
 import os
 import sys
+from shutil import copyfile
 
 USB_PATH = "/run/media/arebel/DASHCAM/"
 
@@ -64,14 +65,19 @@ if args.cut:
 
     print("Files generated: " + str(len(os.listdir(destination))))
 elif args.transfer:
+    cmd = "udisksctl mount -b /dev/sdb1"
+    subprocess.call(cmd, shell=True)
+    
     choice = input("This will delete all files in the USB. Continue? (Y/n): ")
     if choice != "Y":
         print("Transfer cancelled.")
         sys.exit();
 
-    # print('Removing files in ' + USB_PATH)
-    # for f in os.listdir(USB_PATH):
-    #     os.remove(USB_PATH + f)
+    print('Removing files in ' + USB_PATH)
+    for f in os.listdir(USB_PATH):
+        if os.path.isdir(USB_PATH + f):
+            continue
+        os.remove(USB_PATH + f)
 
     source_path = os.path.expanduser(os.path.abspath(args.transfer[0]))
     
@@ -85,8 +91,12 @@ elif args.transfer:
         raise ValueError("Start index should not be bigger than end index!")
         sys.exit()
 
-    print(str(start_index) + " - " + str(end_index))
-        
+    j = 1
+    for i in range(start_index, end_index):
+        s = source_path + "/" + str(i) + ".mp3"
+        d = USB_PATH + f"{j:03}" + ".mp3"
+        print("Copying " + s + " to " + d)
+        copyfile(s, d)
+        j = j + 1
     
     
-
