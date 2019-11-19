@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 import subprocess
 import argparse
@@ -8,7 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-c',
                     '--cut',
                     nargs=3,
-                    help='Cuts the file specified in SOURCE with DURATION in seconds (e.g. 10.0)',
+                    help='Cuts the file specified in SOURCE with DURATION in seconds (e.g. 10.0) and save to DESTINATION folder.',
                     metavar=('SOURCE','DESTINATION','DURATION'))
 
 args = parser.parse_args()
