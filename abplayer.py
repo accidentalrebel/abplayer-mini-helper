@@ -68,16 +68,15 @@ elif args.transfer:
     cmd = "udisksctl mount -b /dev/sdb1"
     subprocess.call(cmd, shell=True)
     
-    choice = input("This will delete all files in the USB. Continue? (Y/n): ")
-    if choice != "Y":
-        print("Transfer cancelled.")
-        sys.exit();
+    choice = input("Delete all files in the USB? (Y/n): ")
+    if choice == "Y":
+        print('Removing files in ' + USB_PATH)
+        for f in os.listdir(USB_PATH):
+            if os.path.isdir(USB_PATH + f):
+                continue
+            os.remove(USB_PATH + f)
 
-    print('Removing files in ' + USB_PATH)
-    for f in os.listdir(USB_PATH):
-        if os.path.isdir(USB_PATH + f):
-            continue
-        os.remove(USB_PATH + f)
+    init_count = len(os.listdir(USB_PATH))
 
     source_path = os.path.expanduser(os.path.abspath(args.transfer[0]))
     
@@ -91,9 +90,9 @@ elif args.transfer:
         raise ValueError("Start index should not be bigger than end index!")
         sys.exit()
 
-    j = 1
+    j = init_count + 1
     for i in range(start_index, end_index):
-        s = source_path + "/" + str(i) + ".mp3"
+        s = source_path + "/" + f"{i:03}" + ".mp3"
         d = USB_PATH + f"{j:03}" + ".mp3"
         print("Copying " + s + " to " + d)
         copyfile(s, d)
