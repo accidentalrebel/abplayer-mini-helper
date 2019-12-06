@@ -9,6 +9,11 @@ from shutil import copyfile
 USB_PATH = "/run/media/arebel/DASHCAM/"
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-m',
+                    '--merge',
+                    nargs=2,
+                    help='Merges all files specified in SOURCE and saves to DESTINATION path.',
+                    metavar=('SOURCE','DESTINATION'))
 parser.add_argument('-c',
                     '--cut',
                     nargs=3,
@@ -32,7 +37,33 @@ parser.add_argument('-e',
 
 args = parser.parse_args()
 
-if args.cut:
+if args.merge:
+    source = os.path.expanduser(os.path.abspath(args.merge[0]))
+    destination = os.path.expanduser(os.path.abspath(args.merge[1]))
+
+    if not os.path.isdir(source):
+        raise ValueError("Source should be a directory");
+        sys.exit()
+
+    files = []
+    for f in os.listdir(source):
+        if not ".mp3" in f:
+            continue
+        
+        files.append(source + "/" + f)
+
+    files.sort()
+
+    cmd = "cat "
+    for f in files:
+        print(f)
+        cmd += " \"" + f + "\" "
+
+    cmd += " > \"" + destination + "\""
+    #print(cmd)
+    subprocess.call(cmd, shell=True)
+        
+elif args.cut:
     source = os.path.expanduser(os.path.abspath(args.cut[0]))
     destination = os.path.expanduser(os.path.abspath(args.cut[1]))
     duration = args.cut[2]
