@@ -122,7 +122,7 @@ elif args.transfer:
         sys.exit()
 
     j = init_count + 1
-    for i in range(start_index, end_index):
+    for i in range(start_index, end_index + 1):
         s = source_path + "/" + f"{i:03}" + ".mp3"
         d = USB_PATH + f"{j:03}" + ".mp3"
         print("Copying " + s + " to " + d)
